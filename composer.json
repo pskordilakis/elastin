@@ -1,7 +1,10 @@
 {
   "name": "pskordilakis/elastin",
   "description": "Elasicsearch Query Builder",
-  "type": "library",
+  "keywords": [
+    "elasticsearch", "query", "builder"
+  ],
+  "homepage": "https://github.com/pskordilakis/elastin",
   "license": "MIT",
   "authors": [
     {
@@ -9,6 +12,7 @@
       "email": "p.skordilakis@gmail.com"
     }
   ],
+  "type": "library",
   "require": {
     "php": "^7.1",
     "ext-json": "*"
