@@ -265,7 +265,7 @@ class Builder
     public function _buildSorting()
     {
         if ($this->sorting) {
-            $this->query['body.sort'] = $this->sorts;
+            $this->query['body.sort'] = $this->sorting;
         }
     }
 
