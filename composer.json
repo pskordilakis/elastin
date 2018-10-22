@@ -1,6 +1,6 @@
 {
   "name": "pskordilakis/elastin",
-  "description": "Elasicsearch Query Builder",
+  "description": "Elasticsearch Query Builder",
   "keywords": [
     "elasticsearch", "query", "builder"
   ],
