@@ -63,6 +63,11 @@ class Builder
     private $shouldClauses = [];
 
     /**
+     * @var ranges
+     */
+    private $ranges = [];
+
+    /**
      * @var aggregations
      */
     private $aggregations = [];
@@ -170,6 +175,11 @@ class Builder
         return $this;
     }
 
+    public function range(string $key, array $predicate)
+    {
+        $this->ranges[$key] = $predicate;
+    }
+
     public function aggregation($key, $value): Builder
     {
         $this->aggregations[$key] = $value;
@@ -255,6 +265,13 @@ class Builder
         }
     }
 
+    private function _buildRangeQueries()
+    {
+        if (count($this->ranges) > 0) {
+            $this->query['body.query.range'] = $this->ranges;
+        }
+    }
+
     private function _buildAggregations()
     {
         if (count($this->aggregations) > 0) {
@@ -293,6 +310,7 @@ class Builder
         $this->_buildIndices();
         $this->_buildMatch();
         $this->_buildBoolQueries();
+        $this->_buildRangeQueries();
         $this->_buildAggregations();
         $this->_buildPagination();
         $this->_buildSorting();
