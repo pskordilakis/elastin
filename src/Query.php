@@ -13,7 +13,7 @@ use stdClass;
 class Query implements ArrayAccess, JsonSerializable
 {
     /**
-     * @var q
+     * @var array q
      */
     private $q;
 
@@ -25,8 +25,6 @@ class Query implements ArrayAccess, JsonSerializable
     /**
      * Get data as array
      *
-     * @param void
-     *
      * @return array
      */
     public function all(): array
@@ -34,10 +32,15 @@ class Query implements ArrayAccess, JsonSerializable
         return $this->q;
     }
 
+    public function empty(): bool
+    {
+        return empty($this->q);
+    }
+
     /**
      * Whether or not an offset exists
      *
-     * @param string An offset to check for
+     * @param string $offset
      * @access public
      *
      * @return boolean
@@ -63,7 +66,7 @@ class Query implements ArrayAccess, JsonSerializable
     /**
      * Returns the value at specified offset
      *
-     * @param string The offset to retrieve
+     * @param string $offset
      * @access public
      *
      * @return mixed
@@ -89,8 +92,8 @@ class Query implements ArrayAccess, JsonSerializable
     /**
      * Assigns a value to the specified offset
      *
-     * @param string The offset to assign the value to
-     * @param mixed  The value to set
+     * @param string $offset
+     * @param mixed $value
      *
      * @access public
      * @abstracting ArrayAccess
@@ -111,7 +114,7 @@ class Query implements ArrayAccess, JsonSerializable
     /**
      * Unsets an offset
      *
-     * @param string The offset to unset
+     * @param string $offset
      *
      * @access public
      * @abstracting ArrayAccess
@@ -133,8 +136,6 @@ class Query implements ArrayAccess, JsonSerializable
     /**
      * Provide data that will be serialized
      * with json_encode
-     *
-     * @param void
      *
      * @return mixed
      */

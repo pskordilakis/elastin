@@ -5,29 +5,19 @@ namespace Tests;
 use Elastin\Builder;
 use stdClass;
 
-class BooleQueriesTest extends \PHPUnit\Framework\TestCase
+class BoolQueriesTest extends BaseTestCase
 {
-    private $builder;
-
-    /**
-     * @before
-     */
-    public function setUp()
-    {
-        $this->builder = new Builder();
-    }
-
     /**
      * @test
      */
     public function must()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->must("term", [ "user" => "kimchy" ])
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'bool' => [
@@ -37,7 +27,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
                         ]
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }
@@ -47,13 +37,13 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function multipleMust()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->must("term", [ "user" => "kimchy" ])
             ->must("term", [ "user" => "kim" ])
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'bool' => [
@@ -64,7 +54,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
                         ]
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }
@@ -74,12 +64,12 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function filter()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->filter("term", [ "tag" => "search" ])
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'bool' => [
@@ -89,7 +79,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
                         ]
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }
@@ -99,13 +89,13 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function multipleFilter()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->filter("term", [ "tag" => "search" ])
             ->filter("term 2", [ "tag" => "search" ])
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'bool' => [
@@ -116,7 +106,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
                         ]
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }
@@ -126,17 +116,17 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function mustNot()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->mustNot("range", [
                 "age" => [
                     "gte" => 10,
                     "lte" => 20
                 ]
             ])
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'bool' => [
@@ -153,7 +143,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
                         ]
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }
@@ -163,7 +153,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function multipleMustNot()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->mustNot("range", [
                 "age" => [
                     "gte" => 10,
@@ -176,10 +166,10 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
                     "lte" => 20
                 ]
             ])
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'bool' => [
@@ -200,7 +190,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
                         ]
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }
@@ -210,12 +200,12 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function should()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->should("term", [ "tag" => "wow" ])
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'bool' => [
@@ -225,7 +215,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
                         ]
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }
@@ -235,13 +225,13 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function multipleShould()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->should("term", [ "tag" => "wow" ])
             ->should("term", [ "tag" => "elasticsearch" ])
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'bool' => [
@@ -252,7 +242,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
                         ]
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }

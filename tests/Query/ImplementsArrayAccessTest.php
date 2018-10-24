@@ -23,9 +23,9 @@ class QueryTests extends \PHPUnit\Framework\TestCase
     {
         $this->query['field'] = 'value';
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode($this->query),
-            json_encode([ 'field' => 'value' ])
+        $this->assertEquals(
+            $this->query->all(),
+            [ 'field' => 'value' ]
         );
     }
 
@@ -36,12 +36,12 @@ class QueryTests extends \PHPUnit\Framework\TestCase
     {
         $this->query['nested.field'] = 'value';
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode($this->query),
-            json_encode([ 'nested' => [
+        $this->assertEquals(
+            $this->query->all(),
+            [ 'nested' => [
                 'field' => 'value'
                 ]
-            ])
+            ]
         );
     }
 
@@ -113,8 +113,6 @@ class QueryTests extends \PHPUnit\Framework\TestCase
         $this->assertEquals($this->query['nested.field'], 'value');
 
         unset($this->query['nested.field']);
-
-        // die(json_encode($this->query));
 
         $this->assertNull($this->query['nested.field']);
     }

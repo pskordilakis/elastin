@@ -4,32 +4,19 @@ namespace Tests;
 
 use Elastin\Builder;
 
-class ExplainsTest extends \PHPUnit\Framework\TestCase
+class ExplainsTest extends BaseTestCase
 {
-    /**
-     * @var builder;
-     */
-    private $builder;
-
-    /**
-     * @before
-     */
-    public function setUp()
-    {
-        $this->builder = new Builder();
-    }
-
     /**
      * @test
      */
     public function enableExplain()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->explain()
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([ 'body' => [ 'explain' => true ]]),
+        $this->assertQuery(
+            [ 'body' => [ 'explain' => true ]],
             $query
         );
     }
@@ -39,12 +26,12 @@ class ExplainsTest extends \PHPUnit\Framework\TestCase
      */
     public function disableExplain()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->explain(false)
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([ 'body' => [ 'explain' => false ]]),
+        $this->assertQuery(
+            [ 'body' => [ 'explain' => false ]],
             $query
         );
     }

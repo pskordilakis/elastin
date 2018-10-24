@@ -5,30 +5,28 @@ namespace Tests;
 use Elastin\Builder;
 use stdClass;
 
-class SortsTest extends \PHPUnit\Framework\TestCase
+class SortsTest extends BaseTestCase
 {
-    /**
-     * @var builder
-     */
-    private $builder;
-
     /**
      * @test
      */
     public function setsSortField()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->sort('field', 'asc')
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString($query, json_encode([
-            'body' => [
-                'sort' => [
-                    'field'=> [
-                        'order' => 'asc'
+        $this->assertQuery(
+            [
+                'body' => [
+                    'sort' => [
+                        'field'=> [
+                            'order' => 'asc'
+                        ]
                     ]
                 ]
-            ]
-        ]));
+            ],
+            $query
+        );
     }
 }

@@ -5,38 +5,25 @@ namespace Tests;
 use Elastin\Builder;
 use stdClass;
 
-class MatchAllQueryTest extends \PHPUnit\Framework\TestCase
+class MatchAllQueryTest extends BaseTestCase
 {
-    /**
-     * @var builder
-     */
-    private $builder;
-
-    /**
-     * @before
-     */
-    public function setUp()
-    {
-        $this->builder = new Builder();
-    }
-
     /**
      * @test
      */
     public function matchAll()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->all()
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'match_all' => new stdClass()
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }
@@ -46,18 +33,18 @@ class MatchAllQueryTest extends \PHPUnit\Framework\TestCase
      */
     public function matchAllWithBoost()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->all(2.0)
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'match_all' => [ 'boost' => 2.0 ]
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }
@@ -67,18 +54,18 @@ class MatchAllQueryTest extends \PHPUnit\Framework\TestCase
      */
     public function matchNone()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->none()
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'match_none' => new stdClass()
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }

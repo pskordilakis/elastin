@@ -2,94 +2,58 @@
 
 namespace Elastin;
 
+use Elastin\Builders\QueryBuilder;
 use stdClass;
 
 class Builder
 {
     /**
-     * @var $query
+     * @var Query $query
      */
     private $query;
 
     /**
-     * @var sources
+     * @var array queries
      */
-    private $sources = [];
+    private $queries = [];
 
     /**
-     * @var indices
+     * @var array indices
      */
     private $indices = [];
 
-    /**
-     * @var matchAll
-     */
-    private $matchAll = null;
-
-    /**
-     * @var matchNone
-     */
-    private $matchNone = null;
-
-    /**
-     * @var from
-     */
-    private $from = null;
-
-    /**
-     * @var size
-     */
-    private $size = null;
-
-
-    /**
-     * @var mustClauses
-     */
-    private $mustClauses = [];
-
-    /**
-     * @var mustNotClauses
-     */
-    private $mustNotClauses = [];
-
-    /**
-     * @var filterClauses
-     */
-    private $filterClauses = [];
-
-    /**
-     * @var shouldClauses
-     */
-    private $shouldClauses = [];
-
-    /**
-     * @var ranges
-     */
-    private $ranges = [];
-
-    /**
-     * @var aggregations
-     */
-    private $aggregations = [];
-
-    /**
-     * @var sorting
-     */
-    private $sorting = [];
-
-    /**
-     * @var explain
-     */
-    private $explain = null;
-
-    /**
-     * @var version
-     */
-    private $version = null;
-
     public function __construct()
     {
-        $this->query = new Query();
+        $this->query = new Query;
+    }
+
+    public static function create()
+    {
+        $builder = new self();
+        $builder->query();
+
+        return $builder;
+    }
+
+    /**
+     * Add new query
+     */
+    public function query(?QueryBuilder $query = null): Builder
+    {
+        $this->appendQuery($query);
+
+        return $this;
+    }
+
+    public function appendQuery(?QueryBuilder $query = null): Builder
+    {
+        if ($query === null) {
+            $this->queries[] = new QueryBuilder();
+        } else {
+            $this->queries[] = $query;
+        }
+
+        return $this;
     }
 
     public function index(string $index): Builder
@@ -106,104 +70,16 @@ class Builder
         return $this;
     }
 
-    public function source(array $includes, array $excludes = null): Builder
+    public function __call(string $name, array $arguments): Builder
     {
-        $value = ($includes && !$excludes)
-            ? $includes
-            : [ 'includes' => $includes, 'excludes' => $excludes ];
+        if (count($this->queries) !== 0) {
+            $queryBuilder = $this->queries[count($this->queries) - 1];
 
-        $this->sources = array_merge($this->sources, $value);
-
-        return $this;
-    }
-
-    public function all(?float $boost = null): Builder
-    {
-        $this->matchAll = $boost
-            ? [ 'boost' => $boost ]
-            : new stdClass();
-
-        return $this;
-    }
-
-    public function none(): Builder
-    {
-        $this->matchNone = new stdClass();
-
-        return $this;
-    }
-
-    public function from(int $from): Builder
-    {
-        $this->from = $from;
-
-        return $this;
-    }
-
-    public function size(int $size): Builder
-    {
-        $this->size = $size;
-
-        return $this;
-    }
-
-    public function must(string $key, array $predicate): Builder
-    {
-        $this->mustClauses[] = [ $key => $predicate ];
-
-        return $this;
-    }
-
-    public function mustNot(string $key, array $predicate): Builder
-    {
-        $this->mustNotClauses[] = [ $key => $predicate ];
-
-        return $this;
-    }
-
-    public function filter(string $key, array $predicate): Builder
-    {
-        $this->filterClauses[] = [ $key => $predicate ];
-
-        return $this;
-    }
-
-    public function should(string $key, array $predicate): Builder
-    {
-        $this->shouldClauses[] = [ $key => $predicate ];
-
-        return $this;
-    }
-
-    public function range(string $key, array $predicate)
-    {
-        $this->ranges[$key] = $predicate;
-    }
-
-    public function aggregation($key, $value): Builder
-    {
-        $this->aggregations[$key] = $value;
-
-        return $this;
-    }
-
-    public function sort(string $field, $order): Builder
-    {
-        $this->sorting[] = [ $field => [ 'order' => $order ]];
-
-        return $this;
-    }
-
-    public function explain(bool $enable = true): Builder
-    {
-        $this->explain = $enable;
-
-        return $this;
-    }
-
-    public function version(bool $enable = true): Builder
-    {
-        $this->version = $enable;
+            $callback = [$queryBuilder, $name];
+            if (is_callable($callback)) {
+                call_user_func_array([$queryBuilder, $name], $arguments);
+            }
+        }
 
         return $this;
     }
@@ -217,114 +93,46 @@ class Builder
         }
     }
 
-    public function _buildSources()
+    private function _buildQueries()
     {
-        if (count($this->sources) > 0) {
-            $this->query['body._source'] = $this->sources;
+        if (count($this->queries) === 1) {
+            $this->query['body'] = $this->queries[0]->build();
+        } elseif (count($this->queries) > 1) {
+            $this->query['body'] = array_map(function ($query) {
+                return $query->build();
+            }, $this->queries);
         }
-    }
-
-    public function _buildMatch()
-    {
-        if (null !== $this->matchAll) {
-            $this->query['body.query.match_all'] = $this->matchAll;
-        }
-
-        if (null !== $this->matchNone) {
-            $this->query['body.query.match_none'] = $this->matchNone;
-        }
-    }
-
-    public function _buildPagination()
-    {
-        if (null !== $this->from) {
-            $this->query['body.from'] = $this->from;
-        }
-
-        if (null !== $this->size) {
-            $this->query['body.size'] = $this->size;
-        }
-    }
-
-    public function _buildBoolQueries()
-    {
-        if (count($this->mustClauses) > 0) {
-            $this->query['body.query.bool.must'] = $this->mustClauses;
-        }
-
-        if (count($this->mustNotClauses) > 0) {
-            $this->query['body.query.bool.must_not'] = $this->mustNotClauses;
-        }
-
-        if (count($this->filterClauses) > 0) {
-            $this->query['body.query.bool.filter'] = $this->filterClauses;
-        }
-
-        if (count($this->shouldClauses) > 0) {
-            $this->query['body.query.bool.should'] = $this->shouldClauses;
-        }
-    }
-
-    private function _buildRangeQueries()
-    {
-        if (count($this->ranges) > 0) {
-            $this->query['body.query.range'] = $this->ranges;
-        }
-    }
-
-    private function _buildAggregations()
-    {
-        if (count($this->aggregations) > 0) {
-            $this->query['body.aggs'] = $this->aggregations;
-        }
-    }
-
-    public function _buildSorting()
-    {
-        if ($this->sorting) {
-            $this->query['body.sort'] = $this->sorting;
-        }
-    }
-
-    public function _buildExplain()
-    {
-        if (null !== $this->explain) {
-            $this->query['body.explain'] = $this->explain;
-        }
-    }
-
-    public function _buildVersion()
-    {
-        if (null !== $this->version) {
-            $this->query['body.version'] = $this->version;
-        }
-    }
-
-    public function query(): array
-    {
-        return $this->query->all();
     }
 
     public function build(): array
     {
         $this->_buildIndices();
-        $this->_buildMatch();
-        $this->_buildBoolQueries();
-        $this->_buildRangeQueries();
-        $this->_buildAggregations();
-        $this->_buildPagination();
-        $this->_buildSorting();
-        $this->_buildSources();
-        $this->_buildExplain();
-        $this->_buildVersion();
+        $this->_buildQueries();
 
-        return $this->query();
+        return $this->query->all();
     }
 
-    public function buildJson()
+    public function buildJson(): ?string
     {
         $query = $this->build();
+        $json = json_encode($query);
 
-        return json_encode($query);
+        if ($json === false) {
+            return null;
+        }
+
+        return $json;
+    }
+
+    public function buildBodyJson(): ?string
+    {
+        $query = $this->query->all();
+        $json = json_encode($query['body']);
+
+        if ($json === false) {
+            return null;
+        }
+
+        return $json;
     }
 }

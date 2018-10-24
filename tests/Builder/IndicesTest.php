@@ -4,33 +4,20 @@ namespace Tests;
 
 use Elastin\Builder;
 
-class IndicesTest extends \PHPUnit\Framework\TestCase
+class IndicesTest extends BaseTestCase
 {
-    /**
-     * @var builder;
-     */
-    private $builder;
-
-    /**
-     * @before
-     */
-    public function setUp()
-    {
-        $this->builder = new Builder();
-    }
-
     /**
      * @test
      */
     public function singleIndexCall()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->index('single_index')
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            $query,
-            json_encode([ 'index' => 'single_index' ])
+        $this->assertQuery(
+            [ 'index' => 'single_index', 'body' => [] ],
+            $query
         );
     }
 
@@ -39,14 +26,14 @@ class IndicesTest extends \PHPUnit\Framework\TestCase
      */
     public function multipleIndexCalls()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->index('index_1')
             ->index('index_2')
             ->index('index_3')
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([ 'index' => 'index_1,index_2,index_3' ]),
+        $this->assertQuery(
+            [ 'index' => 'index_1,index_2,index_3', 'body' => [] ],
             $query
         );
     }
@@ -56,12 +43,12 @@ class IndicesTest extends \PHPUnit\Framework\TestCase
      */
     public function singleIndicesCall()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->indices(['index_1', 'index_2'])
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([ 'index' => 'index_1,index_2' ]),
+        $this->assertQuery(
+            [ 'index' => 'index_1,index_2', 'body' => [] ],
             $query
         );
     }
@@ -71,13 +58,13 @@ class IndicesTest extends \PHPUnit\Framework\TestCase
      */
     public function multipleIndicesCall()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->indices(['index_1', 'index_2'])
             ->indices(['index_3', 'index_4'])
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([ 'index' => 'index_1,index_2,index_3,index_4' ]),
+        $this->assertQuery(
+            [ 'index' => 'index_1,index_2,index_3,index_4', 'body' => [] ],
             $query
         );
     }
