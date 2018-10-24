@@ -8,17 +8,17 @@ use stdClass;
 class Builder
 {
     /**
-     * @var queries
+     * @var Query $query
      */
     private $query;
 
     /**
-     * @var queries
+     * @var array queries
      */
     private $queries = [];
 
     /**
-     * @var indices
+     * @var array indices
      */
     private $indices = [];
 
@@ -75,7 +75,10 @@ class Builder
         if (count($this->queries) !== 0) {
             $queryBuilder = $this->queries[count($this->queries) - 1];
 
-            call_user_func_array([$queryBuilder, $name], $arguments);
+            $callback = [$queryBuilder, $name];
+            if (is_callable($callback)) {
+                call_user_func_array([$queryBuilder, $name], $arguments);
+            }
         }
 
         return $this;
@@ -109,10 +112,27 @@ class Builder
         return $this->query->all();
     }
 
-    public function buildJson()
+    public function buildJson(): ?string
     {
         $query = $this->build();
+        $json = json_encode($query);
 
-        return json_encode($query);
+        if ($json === false) {
+            return null;
+        }
+
+        return $json;
+    }
+
+    public function buildBodyJson(): ?string
+    {
+        $query = $this->query->all();
+        $json = json_encode($query['body']);
+
+        if ($json === false) {
+            return null;
+        }
+
+        return $json;
     }
 }

@@ -4,7 +4,7 @@ namespace Tests;
 
 use Elastin\Builder;
 
-class PaginatesTest extends \PHPUnit\Framework\TestCase
+class PaginatesTest extends BaseTestCase
 {
     /**
      * @test
@@ -13,10 +13,10 @@ class PaginatesTest extends \PHPUnit\Framework\TestCase
     {
         $query = Builder::create()
             ->from(10)
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([ 'body' => [ 'from' => 10 ] ]),
+        $this->assertQuery(
+            [ 'body' => [ 'from' => 10 ] ],
             $query
         );
     }
@@ -28,10 +28,10 @@ class PaginatesTest extends \PHPUnit\Framework\TestCase
     {
         $query = Builder::create()
             ->size(10)
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([ 'body' => [ 'size' => 10 ] ]),
+        $this->assertQuery(
+            [ 'body' => [ 'size' => 10 ] ],
             $query
         );
     }

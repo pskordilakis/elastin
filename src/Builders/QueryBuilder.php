@@ -9,78 +9,78 @@ use stdClass;
 class QueryBuilder implements Builder
 {
     /**
-     * @var $query
+     * @var Query $query
      */
     private $query;
 
     /**
-     * @var sources
+     * @var array sources
      */
     private $sources = [];
 
     /**
-     * @var matchAll
+     * @var mixed matchAll
      */
     private $matchAll = null;
 
     /**
-     * @var matchNone
+     * @var mixed matchNone
      */
     private $matchNone = null;
 
     /**
-     * @var from
+     * @var mixed from
      */
     private $from = null;
 
     /**
-     * @var size
+     * @var mixed size
      */
     private $size = null;
 
 
     /**
-     * @var mustClauses
+     * @var array mustClauses
      */
     private $mustClauses = [];
 
     /**
-     * @var mustNotClauses
+     * @var array mustNotClauses
      */
     private $mustNotClauses = [];
 
     /**
-     * @var filterClauses
+     * @var array filterClauses
      */
     private $filterClauses = [];
 
     /**
-     * @var shouldClauses
+     * @var array shouldClauses
      */
     private $shouldClauses = [];
 
     /**
-     * @var ranges
+     * @var array ranges
      */
     private $ranges = [];
 
     /**
-     * @var aggregations
+     * @var array aggregations
      */
     private $aggregations = [];
 
     /**
-     * @var sorting
+     * @var array sorting
      */
     private $sorting = [];
 
     /**
-     * @var explain
+     * @var mixed explain
      */
     private $explain = null;
 
     /**
-     * @var version
+     * @var mixed version
      */
     private $version = null;
 
@@ -89,7 +89,7 @@ class QueryBuilder implements Builder
         $this->query = new Query();
     }
 
-    public function source(array $includes, array $excludes = null): Builder
+    public function source(array $includes, array $excludes = null): QueryBuilder
     {
         $value = ($includes && !$excludes)
             ? $includes
@@ -100,7 +100,7 @@ class QueryBuilder implements Builder
         return $this;
     }
 
-    public function all(?float $boost = null): Builder
+    public function all(?float $boost = null): QueryBuilder
     {
         $this->matchAll = $boost
             ? [ 'boost' => $boost ]
@@ -109,82 +109,84 @@ class QueryBuilder implements Builder
         return $this;
     }
 
-    public function none(): Builder
+    public function none(): QueryBuilder
     {
         $this->matchNone = new stdClass();
 
         return $this;
     }
 
-    public function from(int $from): Builder
+    public function from(int $from): QueryBuilder
     {
         $this->from = $from;
 
         return $this;
     }
 
-    public function size(int $size): Builder
+    public function size(int $size): QueryBuilder
     {
         $this->size = $size;
 
         return $this;
     }
 
-    public function must(string $key, array $predicate): Builder
+    public function must(string $key, array $predicate): QueryBuilder
     {
         $this->mustClauses[] = [ $key => $predicate ];
 
         return $this;
     }
 
-    public function mustNot(string $key, array $predicate): Builder
+    public function mustNot(string $key, array $predicate): QueryBuilder
     {
         $this->mustNotClauses[] = [ $key => $predicate ];
 
         return $this;
     }
 
-    public function filter(string $key, array $predicate): Builder
+    public function filter(string $key, array $predicate): QueryBuilder
     {
         $this->filterClauses[] = [ $key => $predicate ];
 
         return $this;
     }
 
-    public function should(string $key, array $predicate): Builder
+    public function should(string $key, array $predicate): QueryBuilder
     {
         $this->shouldClauses[] = [ $key => $predicate ];
 
         return $this;
     }
 
-    public function range(string $key, array $predicate)
+    public function range(string $key, array $predicate): QueryBuilder
     {
         $this->ranges[$key] = $predicate;
+
+        return $this;
     }
 
-    public function aggregation($key, $value): Builder
+    public function aggregation($key, $value): QueryBuilder
     {
         $this->aggregations[$key] = $value;
 
         return $this;
     }
 
-    public function sort(string $field, $order): Builder
+    public function sort(string $field, $order): QueryBuilder
     {
         $this->sorting[] = [ $field => [ 'order' => $order ]];
 
         return $this;
     }
 
-    public function explain(bool $enable = true): Builder
+    public function explain(bool $enable = true): QueryBuilder
     {
         $this->explain = $enable;
 
         return $this;
     }
 
-    public function version(bool $enable = true): Builder
+    public function version(bool $enable = true): QueryBuilder
     {
         $this->version = $enable;
 
@@ -287,12 +289,5 @@ class QueryBuilder implements Builder
         $this->_buildVersion();
 
         return $this->query->all();
-    }
-
-    public function buildJson()
-    {
-        $query = $this->build();
-
-        return json_encode($query);
     }
 }

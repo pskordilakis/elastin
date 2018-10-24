@@ -4,7 +4,7 @@ namespace Tests;
 
 use Elastin\Builder;
 
-class ExplainsTest extends \PHPUnit\Framework\TestCase
+class ExplainsTest extends BaseTestCase
 {
     /**
      * @test
@@ -13,10 +13,10 @@ class ExplainsTest extends \PHPUnit\Framework\TestCase
     {
         $query = Builder::create()
             ->explain()
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([ 'body' => [ 'explain' => true ]]),
+        $this->assertQuery(
+            [ 'body' => [ 'explain' => true ]],
             $query
         );
     }
@@ -28,10 +28,10 @@ class ExplainsTest extends \PHPUnit\Framework\TestCase
     {
         $query = Builder::create()
             ->explain(false)
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([ 'body' => [ 'explain' => false ]]),
+        $this->assertQuery(
+            [ 'body' => [ 'explain' => false ]],
             $query
         );
     }

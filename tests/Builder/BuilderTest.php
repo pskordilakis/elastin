@@ -4,7 +4,7 @@ namespace Tests;
 
 use Elastin\Builder;
 
-class BuilderTest extends \PHPUnit\Framework\TestCase
+class BuilderTest extends BaseTestCase
 {
     /**
      * @test
@@ -13,17 +13,17 @@ class BuilderTest extends \PHPUnit\Framework\TestCase
     {
         $sourceQuery = Builder::create()
             ->source(['field 1', 'field 2'])
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     '_source' => [
                         'field 1',
                         'field 2'
                     ]
                 ]
-            ]),
+            ],
             $sourceQuery
         );
     }

@@ -5,7 +5,7 @@ namespace Tests;
 use Elastin\Builder;
 use stdClass;
 
-class MatchAllQueryTest extends \PHPUnit\Framework\TestCase
+class MatchAllQueryTest extends BaseTestCase
 {
     /**
      * @test
@@ -14,16 +14,16 @@ class MatchAllQueryTest extends \PHPUnit\Framework\TestCase
     {
         $query = Builder::create()
             ->all()
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'match_all' => new stdClass()
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }
@@ -35,16 +35,16 @@ class MatchAllQueryTest extends \PHPUnit\Framework\TestCase
     {
         $query = Builder::create()
             ->all(2.0)
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'match_all' => [ 'boost' => 2.0 ]
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }
@@ -56,16 +56,16 @@ class MatchAllQueryTest extends \PHPUnit\Framework\TestCase
     {
         $query = Builder::create()
             ->none()
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([
+        $this->assertQuery(
+            [
                 'body' => [
                     'query' => [
                         'match_none' => new stdClass()
                     ]
                 ]
-            ]),
+            ],
             $query
         );
     }

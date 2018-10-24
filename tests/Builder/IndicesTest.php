@@ -4,7 +4,7 @@ namespace Tests;
 
 use Elastin\Builder;
 
-class IndicesTest extends \PHPUnit\Framework\TestCase
+class IndicesTest extends BaseTestCase
 {
     /**
      * @test
@@ -13,11 +13,11 @@ class IndicesTest extends \PHPUnit\Framework\TestCase
     {
         $query = Builder::create()
             ->index('single_index')
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            $query,
-            json_encode([ 'index' => 'single_index', 'body' => [] ])
+        $this->assertQuery(
+            [ 'index' => 'single_index', 'body' => [] ],
+            $query
         );
     }
 
@@ -30,10 +30,10 @@ class IndicesTest extends \PHPUnit\Framework\TestCase
             ->index('index_1')
             ->index('index_2')
             ->index('index_3')
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([ 'index' => 'index_1,index_2,index_3', 'body' => [] ]),
+        $this->assertQuery(
+            [ 'index' => 'index_1,index_2,index_3', 'body' => [] ],
             $query
         );
     }
@@ -45,10 +45,10 @@ class IndicesTest extends \PHPUnit\Framework\TestCase
     {
         $query = Builder::create()
             ->indices(['index_1', 'index_2'])
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([ 'index' => 'index_1,index_2', 'body' => [] ]),
+        $this->assertQuery(
+            [ 'index' => 'index_1,index_2', 'body' => [] ],
             $query
         );
     }
@@ -61,10 +61,10 @@ class IndicesTest extends \PHPUnit\Framework\TestCase
         $query = Builder::create()
             ->indices(['index_1', 'index_2'])
             ->indices(['index_3', 'index_4'])
-            ->buildJson();
+            ->build();
 
-        $this->assertJsonStringEqualsJsonString(
-            json_encode([ 'index' => 'index_1,index_2,index_3,index_4', 'body' => [] ]),
+        $this->assertQuery(
+            [ 'index' => 'index_1,index_2,index_3,index_4', 'body' => [] ],
             $query
         );
     }
