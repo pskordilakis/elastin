@@ -8,24 +8,11 @@ use stdClass;
 class MatchAllQueryTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var builder
-     */
-    private $builder;
-
-    /**
-     * @before
-     */
-    public function setUp()
-    {
-        $this->builder = new Builder();
-    }
-
-    /**
      * @test
      */
     public function matchAll()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->all()
             ->buildJson();
 
@@ -46,7 +33,7 @@ class MatchAllQueryTest extends \PHPUnit\Framework\TestCase
      */
     public function matchAllWithBoost()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->all(2.0)
             ->buildJson();
 
@@ -67,7 +54,7 @@ class MatchAllQueryTest extends \PHPUnit\Framework\TestCase
      */
     public function matchNone()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->none()
             ->buildJson();
 

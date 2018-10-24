@@ -34,6 +34,11 @@ class Query implements ArrayAccess, JsonSerializable
         return $this->q;
     }
 
+    public function empty(): bool
+    {
+        return empty($this->q);
+    }
+
     /**
      * Whether or not an offset exists
      *

@@ -8,16 +8,11 @@ use stdClass;
 class SortsTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var builder
-     */
-    private $builder;
-
-    /**
      * @test
      */
     public function setsSortField()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->sort('field', 'asc')
             ->buildJson();
 

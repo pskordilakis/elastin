@@ -7,24 +7,11 @@ use Elastin\Builder;
 class ExplainsTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var builder;
-     */
-    private $builder;
-
-    /**
-     * @before
-     */
-    public function setUp()
-    {
-        $this->builder = new Builder();
-    }
-
-    /**
      * @test
      */
     public function enableExplain()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->explain()
             ->buildJson();
 
@@ -39,7 +26,7 @@ class ExplainsTest extends \PHPUnit\Framework\TestCase
      */
     public function disableExplain()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->explain(false)
             ->buildJson();
 

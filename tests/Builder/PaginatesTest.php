@@ -7,24 +7,11 @@ use Elastin\Builder;
 class PaginatesTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var builder
-     */
-    private $builder;
-
-    /**
-     * @before
-     */
-    public function setUp()
-    {
-        $this->builder = new Builder();
-    }
-
-    /**
      * @test
      */
     public function setsFromField()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->from(10)
             ->buildJson();
 
@@ -39,7 +26,7 @@ class PaginatesTest extends \PHPUnit\Framework\TestCase
      */
     public function setsSizeField()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->size(10)
             ->buildJson();
 

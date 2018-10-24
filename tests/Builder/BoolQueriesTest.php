@@ -3,26 +3,17 @@
 namespace Tests;
 
 use Elastin\Builder;
+use Elastin\Builders\QueryBuilder;
 use stdClass;
 
 class BooleQueriesTest extends \PHPUnit\Framework\TestCase
 {
-    private $builder;
-
-    /**
-     * @before
-     */
-    public function setUp()
-    {
-        $this->builder = new Builder();
-    }
-
     /**
      * @test
      */
     public function must()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->must("term", [ "user" => "kimchy" ])
             ->buildJson();
 
@@ -47,7 +38,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function multipleMust()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->must("term", [ "user" => "kimchy" ])
             ->must("term", [ "user" => "kim" ])
             ->buildJson();
@@ -74,7 +65,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function filter()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->filter("term", [ "tag" => "search" ])
             ->buildJson();
 
@@ -99,7 +90,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function multipleFilter()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->filter("term", [ "tag" => "search" ])
             ->filter("term 2", [ "tag" => "search" ])
             ->buildJson();
@@ -126,7 +117,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function mustNot()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->mustNot("range", [
                 "age" => [
                     "gte" => 10,
@@ -163,7 +154,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function multipleMustNot()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->mustNot("range", [
                 "age" => [
                     "gte" => 10,
@@ -210,7 +201,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function should()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->should("term", [ "tag" => "wow" ])
             ->buildJson();
 
@@ -235,7 +226,7 @@ class BooleQueriesTest extends \PHPUnit\Framework\TestCase
      */
     public function multipleShould()
     {
-        $query = $this->builder
+        $query = Builder::create()
             ->should("term", [ "tag" => "wow" ])
             ->should("term", [ "tag" => "elasticsearch" ])
             ->buildJson();
