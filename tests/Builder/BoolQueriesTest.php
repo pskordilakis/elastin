@@ -3,7 +3,6 @@
 namespace Tests;
 
 use Elastin\Builder;
-use Elastin\Builders\QueryBuilder;
 use stdClass;
 
 class BoolQueriesTest extends BaseTestCase
