@@ -126,7 +126,7 @@ class Builder
 
     public function buildBodyJson(): ?string
     {
-        $query = $this->query->all();
+        $query = $this->build();
         $json = json_encode($query['body']);
 
         if ($json === false) {
