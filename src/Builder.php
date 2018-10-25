@@ -8,24 +8,9 @@ use stdClass;
 class Builder
 {
     /**
-     * @var Query $query
-     */
-    private $query;
-
-    /**
      * @var array $queries
      */
     private $queries = [];
-
-    /**
-     * @var array $indices
-     */
-    private $indices = [];
-
-    public function __construct()
-    {
-        $this->query = new Query;
-    }
 
     public static function create()
     {
@@ -68,34 +53,6 @@ class Builder
     }
 
     /**
-     * Add index
-     *
-     * @param string $index
-     *
-     * @return \Elastin\Builder
-     */
-    public function index(string $index): Builder
-    {
-        $this->indices[] = $index;
-
-        return $this;
-    }
-
-    /**
-     * Add multiple indexes
-     *
-     * @param array $indices
-     *
-     * @return \Elastin\Builder
-     */
-    public function indices(array $indices): Builder
-    {
-        $this->indices = array_merge($this->indices, $indices);
-
-        return $this;
-    }
-
-    /**
      * Trap any method call that is not defined in the Builder
      * and call it at last query object
      *
@@ -119,53 +76,41 @@ class Builder
     }
 
     /**
-     * Add all indices to query
-     *
-     * @return \Elastin\Builder
-     */
-    public function _buildIndices(): Builder
-    {
-        if (count($this->indices) > 0) {
-            $indices = implode(',', $this->indices);
-
-            $this->query['index'] = $indices;
-        }
-
-        return $this;
-    }
-
-    /**
-     * Build all queries
-     *
-     * @return \Elastin\Builder
-     */
-    private function _buildQueries(): Builder
-    {
-        if (count($this->queries) === 1) {
-            // Single query is an object
-            $this->query['body'] = $this->queries[0]->build();
-        } elseif (count($this->queries) > 1) {
-            // multiple queries is an array
-            $this->query['body'] = array_map(function ($query) {
-                return $query->build();
-            }, $this->queries);
-        }
-
-        return $this;
-    }
-
-    /**
      * Build final query/queries
      *
      * @return array
      */
     public function build(): array
     {
-        $this
-            ->_buildIndices()
-            ->_buildQueries();
+        $queries = array_map(function ($query) {
+            return $query->build();
+        }, $this->queries);
 
-        return $this->query->all();
+        if (count($queries) <= 0) {
+            // empty query
+            return [
+                'body' => new stdClass()
+            ];
+        }
+
+        if (count($queries) === 1) {
+            // Single query
+            $query = $queries[0];
+
+            return array_merge($query['headers'], [ 'body' => $query['body'] ]);
+        }
+
+
+        if (count($queries) > 1) {
+            // multiple queries is an array
+            return array_reduce($queries, function ($acc, $query) {
+                $acc['body'] = array_merge($acc['body'], array_values($query));
+
+                return $acc;
+            }, [ 'body' => [] ]);
+        }
+
+        return [];
     }
 
     /**

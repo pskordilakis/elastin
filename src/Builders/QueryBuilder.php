@@ -9,85 +9,120 @@ use stdClass;
 class QueryBuilder implements Builder
 {
     /**
-     * @var Query $query
+     * @var Query
      */
     private $query;
 
     /**
-     * @var array sources
+     * @var array
+     */
+    private $indices = [];
+
+    /**
+     * @var array
      */
     private $sources = [];
 
     /**
-     * @var mixed matchAll
+     * @var mixed
      */
     private $matchAll = null;
 
     /**
-     * @var mixed matchNone
+     * @var mixed
      */
     private $matchNone = null;
 
     /**
-     * @var mixed from
+     * @var mixed
      */
     private $from = null;
 
     /**
-     * @var mixed size
+     * @var mixed
      */
     private $size = null;
 
 
     /**
-     * @var array mustClauses
+     * @var array
      */
     private $mustClauses = [];
 
     /**
-     * @var array mustNotClauses
+     * @var array
      */
     private $mustNotClauses = [];
 
     /**
-     * @var array filterClauses
+     * @var array
      */
     private $filterClauses = [];
 
     /**
-     * @var array shouldClauses
+     * @var array
      */
     private $shouldClauses = [];
 
     /**
-     * @var array ranges
+     * @var array
      */
     private $ranges = [];
 
     /**
-     * @var array aggregations
+     * @var array
      */
     private $aggregations = [];
 
     /**
-     * @var array sorting
+     * @var array
      */
     private $sorting = [];
 
     /**
-     * @var mixed explain
+     * @var mixed
      */
     private $explain = null;
 
     /**
-     * @var mixed version
+     * @var mixed
      */
     private $version = null;
 
-    public function __construct()
+    /**
+     * Add index
+     *
+     * @param string $index
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function index(string $index): QueryBuilder
     {
-        $this->query = new Query();
+        $this->indices[] = $index;
+
+        return $this;
     }
+
+    /**
+     * Add multiple indexes
+     *
+     * @param array $indices
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function indices(array $indices): QueryBuilder
+    {
+        $this->indices = array_merge($this->indices, $indices);
+
+        return $this;
+    }
+
+    /**
+     * @param array $includes
+     * @param array $excludes
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
 
     public function source(array $includes, array $excludes = null): QueryBuilder
     {
@@ -100,6 +135,11 @@ class QueryBuilder implements Builder
         return $this;
     }
 
+    /**
+     * @param float $boost
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function all(?float $boost = null): QueryBuilder
     {
         $this->matchAll = $boost
@@ -109,6 +149,9 @@ class QueryBuilder implements Builder
         return $this;
     }
 
+    /**
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function none(): QueryBuilder
     {
         $this->matchNone = new stdClass();
@@ -116,6 +159,11 @@ class QueryBuilder implements Builder
         return $this;
     }
 
+    /**
+     * @param int $from
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function from(int $from): QueryBuilder
     {
         $this->from = $from;
@@ -123,6 +171,11 @@ class QueryBuilder implements Builder
         return $this;
     }
 
+    /**
+     * @param int $size
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function size(int $size): QueryBuilder
     {
         $this->size = $size;
@@ -130,6 +183,12 @@ class QueryBuilder implements Builder
         return $this;
     }
 
+    /**
+     * @param string $key
+     * @param array $predicate
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function must(string $key, array $predicate): QueryBuilder
     {
         $this->mustClauses[] = [ $key => $predicate ];
@@ -137,6 +196,12 @@ class QueryBuilder implements Builder
         return $this;
     }
 
+    /**
+     * @param string $key
+     * @param array $predicate
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function mustNot(string $key, array $predicate): QueryBuilder
     {
         $this->mustNotClauses[] = [ $key => $predicate ];
@@ -144,6 +209,12 @@ class QueryBuilder implements Builder
         return $this;
     }
 
+    /**
+     * @param string $key
+     * @param array $predicate
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function filter(string $key, array $predicate): QueryBuilder
     {
         $this->filterClauses[] = [ $key => $predicate ];
@@ -151,6 +222,12 @@ class QueryBuilder implements Builder
         return $this;
     }
 
+    /**
+     * @param string $key
+     * @param array $predicate
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function should(string $key, array $predicate): QueryBuilder
     {
         $this->shouldClauses[] = [ $key => $predicate ];
@@ -158,6 +235,12 @@ class QueryBuilder implements Builder
         return $this;
     }
 
+    /**
+     * @param string $key
+     * @param array $predicate
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function range(string $key, array $predicate): QueryBuilder
     {
         $this->ranges[$key] = $predicate;
@@ -165,6 +248,9 @@ class QueryBuilder implements Builder
         return $this;
     }
 
+    /**
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function aggregation($key, $value): QueryBuilder
     {
         $this->aggregations[$key] = $value;
@@ -172,13 +258,24 @@ class QueryBuilder implements Builder
         return $this;
     }
 
-    public function sort(string $field, $order): QueryBuilder
+    /**
+     * @param string $field
+     * @param string $order
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function sort(string $field, string $order): QueryBuilder
     {
         $this->sorting[] = [ $field => [ 'order' => $order ]];
 
         return $this;
     }
 
+    /**
+     * @param bool $enable
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function explain(bool $enable = true): QueryBuilder
     {
         $this->explain = $enable;
@@ -186,6 +283,11 @@ class QueryBuilder implements Builder
         return $this;
     }
 
+    /**
+     * @param bool $enable
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function version(bool $enable = true): QueryBuilder
     {
         $this->version = $enable;
@@ -193,100 +295,167 @@ class QueryBuilder implements Builder
         return $this;
     }
 
-    public function _buildSources()
+    /**
+     * Add all indices to query
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    private function _buildIndices(): QueryBuilder
     {
-        if (count($this->sources) > 0) {
-            $this->query['_source'] = $this->sources;
+        if (count($this->indices) > 0) {
+            $indices = implode(',', $this->indices);
+
+            $this->query->headers['index'] = $indices;
         }
+
+        return $this;
     }
 
-    public function _buildMatch()
+    /**
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    private function _buildSources(): QueryBuilder
+    {
+        if (count($this->sources) > 0) {
+            $this->query->body['_source'] = $this->sources;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    private function _buildMatch(): QueryBuilder
     {
         if (null !== $this->matchAll) {
-            $this->query['query.match_all'] = $this->matchAll;
+            $this->query->body['query.match_all'] = $this->matchAll;
         }
 
         if (null !== $this->matchNone) {
-            $this->query['query.match_none'] = $this->matchNone;
+            $this->query->body['query.match_none'] = $this->matchNone;
         }
+
+        return $this;
     }
 
-    public function _buildPagination()
+    /**
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    private function _buildPagination(): QueryBuilder
     {
         if (null !== $this->from) {
-            $this->query['from'] = $this->from;
+            $this->query->body['from'] = $this->from;
         }
 
         if (null !== $this->size) {
-            $this->query['size'] = $this->size;
+            $this->query->body['size'] = $this->size;
         }
+
+        return $this;
     }
 
-    public function _buildBoolQueries()
+    /**
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    private function _buildBoolQueries(): QueryBuilder
     {
         if (count($this->mustClauses) > 0) {
-            $this->query['query.bool.must'] = $this->mustClauses;
+            $this->query->body['query.bool.must'] = $this->mustClauses;
         }
 
         if (count($this->mustNotClauses) > 0) {
-            $this->query['query.bool.must_not'] = $this->mustNotClauses;
+            $this->query->body['query.bool.must_not'] = $this->mustNotClauses;
         }
 
         if (count($this->filterClauses) > 0) {
-            $this->query['query.bool.filter'] = $this->filterClauses;
+            $this->query->body['query.bool.filter'] = $this->filterClauses;
         }
 
         if (count($this->shouldClauses) > 0) {
-            $this->query['query.bool.should'] = $this->shouldClauses;
+            $this->query->body['query.bool.should'] = $this->shouldClauses;
         }
+
+        return $this;
     }
 
-    private function _buildRangeQueries()
+    /**
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    private function _buildRangeQueries(): QueryBuilder
     {
         if (count($this->ranges) > 0) {
-            $this->query['query.range'] = $this->ranges;
+            $this->query->body['query.range'] = $this->ranges;
         }
+
+        return $this;
     }
 
-    private function _buildAggregations()
+    /**
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    private function _buildAggregations(): QueryBuilder
     {
         if (count($this->aggregations) > 0) {
-            $this->query['aggs'] = $this->aggregations;
+            $this->query->body['aggs'] = $this->aggregations;
         }
+
+        return $this;
     }
 
-    public function _buildSorting()
+    /**
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    private function _buildSorting(): QueryBuilder
     {
         if ($this->sorting) {
-            $this->query['sort'] = $this->sorting;
+            $this->query->body['sort'] = $this->sorting;
         }
+
+        return $this;
     }
 
-    public function _buildExplain()
+    /**
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    private function _buildExplain(): QueryBuilder
     {
         if (null !== $this->explain) {
-            $this->query['explain'] = $this->explain;
+            $this->query->body['explain'] = $this->explain;
         }
+
+        return $this;
     }
 
-    public function _buildVersion()
+    /**
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    private function _buildVersion(): QueryBuilder
     {
         if (null !== $this->version) {
-            $this->query['version'] = $this->version;
+            $this->query->body['version'] = $this->version;
         }
+
+        return $this;
     }
 
     public function build(): array
     {
-        $this->_buildMatch();
-        $this->_buildBoolQueries();
-        $this->_buildRangeQueries();
-        $this->_buildAggregations();
-        $this->_buildPagination();
-        $this->_buildSorting();
-        $this->_buildSources();
-        $this->_buildExplain();
-        $this->_buildVersion();
+        $this->query = new Query;
+
+        $this
+            ->_buildIndices()
+            ->_buildMatch()
+            ->_buildBoolQueries()
+            ->_buildRangeQueries()
+            ->_buildAggregations()
+            ->_buildPagination()
+            ->_buildSorting()
+            ->_buildSources()
+            ->_buildExplain()
+            ->_buildVersion();
+
+        // die($this->query->all());
 
         return $this->query->all();
     }

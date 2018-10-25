@@ -2,24 +2,28 @@
 
 namespace Elastin;
 
-use ArrayAccess;
 use JsonSerializable;
-use stdClass;
 
 /**
  * Implements basic query object
  * It can be accessed as array with dot notation parameter
  */
-class Query implements ArrayAccess, JsonSerializable
+class Query implements JsonSerializable
 {
     /**
-     * @var array q
+     * @var \Elastin\Container
      */
-    private $q;
+    public $headers;
+
+    /**
+     * @var \Elastin\Container
+     */
+    public $body;
 
     public function __construct()
     {
-        $this->q = [];
+        $this->headers = new Container();
+        $this->body = new Container();
     }
 
     /**
@@ -29,108 +33,20 @@ class Query implements ArrayAccess, JsonSerializable
      */
     public function all(): array
     {
-        return $this->q;
+        return [
+            'headers' => $this->headers->all(),
+            'body' => $this->body->all()
+        ];
     }
 
+    /**
+     * Returns if the query is empty
+     *
+     * @return bool
+     */
     public function empty(): bool
     {
-        return empty($this->q);
-    }
-
-    /**
-     * Whether or not an offset exists
-     *
-     * @param string $offset
-     * @access public
-     *
-     * @return boolean
-     * @abstracting ArrayAccess
-     */
-    public function offsetExists($offset): bool
-    {
-        $fields = explode('.', $offset);
-
-        $val = $this->q;
-
-        foreach ($fields as $field) {
-            if (is_array($val) && array_key_exists($field, $val)) {
-                $val = $val[$field];
-            } else {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    /**
-     * Returns the value at specified offset
-     *
-     * @param string $offset
-     * @access public
-     *
-     * @return mixed
-     * @abstracting ArrayAccess
-     */
-    public function offsetGet($offset)
-    {
-        $fields = explode('.', $offset);
-
-        $pivot = &$this->q;
-
-        foreach ($fields as $field) {
-            if (array_key_exists($field, $pivot)) {
-                $pivot = &$pivot[$field];
-            } else {
-                return null;
-            }
-        }
-
-        return $pivot;
-    }
-
-    /**
-     * Assigns a value to the specified offset
-     *
-     * @param string $offset
-     * @param mixed $value
-     *
-     * @access public
-     * @abstracting ArrayAccess
-     */
-    public function offsetSet($offset, $value): void
-    {
-        $fields = explode('.', $offset);
-
-        $pivot = &$this->q;
-
-        foreach ($fields as $field) {
-            $pivot = &$pivot[$field];
-        }
-
-        $pivot = $value;
-    }
-
-    /**
-     * Unsets an offset
-     *
-     * @param string $offset
-     *
-     * @access public
-     * @abstracting ArrayAccess
-     */
-    public function offsetUnset($offset): void
-    {
-        $fields = explode('.', $offset);
-        $field = array_pop($fields);
-
-        $pivot = &$this->q;
-
-        foreach ($fields as $part) {
-            $pivot = &$pivot[$part];
-        }
-
-        unset($pivot[$field]);
+        return $this->headers->empty() && $this->body->empty();
     }
 
     /**
