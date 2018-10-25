@@ -21,8 +21,6 @@ class MultipleQueriesTest extends BaseTestCase
             ->filter("term", [ "tag" => "search" ])
             ->build();
 
-        // die(print_r($query));
-
         $this->assertQuery(
             [
                 'body' => [

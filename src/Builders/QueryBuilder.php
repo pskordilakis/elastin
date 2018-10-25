@@ -455,8 +455,6 @@ class QueryBuilder implements Builder
             ->_buildExplain()
             ->_buildVersion();
 
-        // die($this->query->all());
-
         return $this->query->all();
     }
 }
