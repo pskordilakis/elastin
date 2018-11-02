@@ -53,6 +53,38 @@ class Builder
     }
 
     /**
+     * Check if we do not have any query
+     *
+     * @return bool
+     */
+    public function empty(): bool
+    {
+        return count($this->queries) === 0;
+    }
+
+    /**
+     * Check if we have single query.
+     * Used with search method/endpoint.
+     *
+     * @return bool
+     */
+    public function single()
+    {
+        return count($this->queries) === 1;
+    }
+
+    /**
+     * Check if we have multiple queries.
+     * Used with msearch method/endpoint.
+     *
+     * @return bool
+     */
+    public function multiple(): bool
+    {
+        return count($this->queries) > 1;
+    }
+
+    /**
      * Trap any method call that is not defined in the Builder
      * and call it at last query object
      *
