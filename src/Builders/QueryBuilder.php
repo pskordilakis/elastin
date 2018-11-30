@@ -202,11 +202,47 @@ class QueryBuilder implements Builder
      *
      * @return \Elastin\Builders\QueryBuilder
      */
-    public function mustNot(string $key, array $predicate): QueryBuilder
+    public function filter(string $key, array $predicate): QueryBuilder
     {
-        $this->mustNotClauses[] = [ $key => $predicate ];
+        $this->filterClauses[] = [ $key => $predicate ];
 
         return $this;
+    }
+
+    /**
+     * @param string $field
+     * @param mixed $value
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function where(string $field, $value): QueryBuilder
+    {
+        return $this->filter('term', [ $field => $value ]);
+    }
+
+    /**
+     * @param string $field
+     * @param mixed $value
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function whereNot(string $field, $value): QueryBuilder
+    {
+        return $this->mustNot('term', [ $field => $value ]);
+    }
+
+    /**
+     * @param string $field
+     * @param mixed $value
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function whereBetween(string $field, $gte, $lte): QueryBuilder
+    {
+        return $this->filter('range', [ $field => [
+            'gte' => $gte,
+            'lte' => $lte,
+         ]]);
     }
 
     /**
@@ -215,9 +251,9 @@ class QueryBuilder implements Builder
      *
      * @return \Elastin\Builders\QueryBuilder
      */
-    public function filter(string $key, array $predicate): QueryBuilder
+    public function mustNot(string $key, array $predicate): QueryBuilder
     {
-        $this->filterClauses[] = [ $key => $predicate ];
+        $this->mustNotClauses[] = [ $key => $predicate ];
 
         return $this;
     }
