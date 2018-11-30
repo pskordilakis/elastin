@@ -4,6 +4,7 @@ namespace Elastin\Builders;
 
 use Elastin\Interfaces\Builder;
 use Elastin\Query;
+use Elastin\Container;
 use stdClass;
 
 class QueryBuilder implements Builder
@@ -72,7 +73,7 @@ class QueryBuilder implements Builder
     /**
      * @var array
      */
-    private $aggregations = [];
+    private $aggregations = null;
 
     /**
      * @var array
@@ -88,6 +89,11 @@ class QueryBuilder implements Builder
      * @var mixed
      */
     private $version = null;
+
+    public function __construct()
+    {
+        $this->aggregations = new Container();
+    }
 
     /**
      * Add index
@@ -285,6 +291,9 @@ class QueryBuilder implements Builder
     }
 
     /**
+     * @param mixed $key
+     * @param mixed $value
+     *
      * @return \Elastin\Builders\QueryBuilder
      */
     public function aggregation($key, $value): QueryBuilder
@@ -292,6 +301,51 @@ class QueryBuilder implements Builder
         $this->aggregations[$key] = $value;
 
         return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param string $field
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function count(string $name, string $field): QueryBuilder
+    {
+        return $this->aggregation($name, [ 'value_count' => [ 'field' => $field ] ]);
+    }
+
+    /**
+     * @param string $name
+     * @param string $field
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function cardinality(string $name, string $field): QueryBuilder
+    {
+        return $this->aggregation($name, [ 'cardinality' => [ 'field' => $field ] ]);
+    }
+
+    /**
+     * @param string $name
+     * @param string $field
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function groupBy(string $name, string $field): QueryBuilder
+    {
+        return $this->aggregation($name, [ 'term' => [ 'field' => $field ] ]);
+    }
+
+    /**
+     * @param string $name
+     * @param string $field
+     * @param array|null $options
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function timeSeries(string $name, string $field, ?array $options): QueryBuilder
+    {
+        return $this->aggregation($name, [ 'date_histogram' => array_merge([ 'field' => $field ], $options)]);
     }
 
     /**
@@ -433,7 +487,7 @@ class QueryBuilder implements Builder
     private function _buildAggregations(): QueryBuilder
     {
         if (count($this->aggregations) > 0) {
-            $this->query->body['aggs'] = $this->aggregations;
+            $this->query->body['aggs'] = $this->aggregations->all();
         }
 
         return $this;
