@@ -3,6 +3,7 @@
 namespace Elastin;
 
 use ArrayAccess;
+use Countable;
 use JsonSerializable;
 use stdClass;
 
@@ -10,7 +11,7 @@ use stdClass;
  * Implements basic query object
  * It can be accessed as array with dot notation parameter
  */
-class Container implements ArrayAccess, JsonSerializable
+class Container implements ArrayAccess, Countable, JsonSerializable
 {
     /**
      * @var array data
@@ -20,6 +21,14 @@ class Container implements ArrayAccess, JsonSerializable
     public function __construct()
     {
         $this->data = [];
+    }
+
+    /**
+     * @return int
+     */
+    public function count()
+    {
+        return count($this->data);
     }
 
     /**
