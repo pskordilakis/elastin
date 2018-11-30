@@ -333,7 +333,7 @@ class QueryBuilder implements Builder
      */
     public function groupBy(string $name, string $field): QueryBuilder
     {
-        return $this->aggregation($name, [ 'term' => [ 'field' => $field ] ]);
+        return $this->aggregation($name, [ 'terms' => [ 'field' => $field ] ]);
     }
 
     /**
