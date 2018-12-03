@@ -331,6 +331,17 @@ class QueryBuilder implements Builder
      *
      * @return \Elastin\Builders\QueryBuilder
      */
+    public function sum(string $name, string $field): QueryBuilder
+    {
+        return $this->aggregation($name, [ 'sum' => [ 'field' => $field ] ]);
+    }
+
+    /**
+     * @param string $name
+     * @param string $field
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function groupBy(string $name, string $field): QueryBuilder
     {
         return $this->aggregation($name, [ 'terms' => [ 'field' => $field ] ]);
@@ -346,6 +357,30 @@ class QueryBuilder implements Builder
     public function timeSeries(string $name, string $field, ?array $options): QueryBuilder
     {
         return $this->aggregation($name, [ 'date_histogram' => array_merge([ 'field' => $field ], $options)]);
+    }
+
+    /**
+     * @param string $name
+     * @param array $vars
+     * @param string $script
+     * @param string|null $gap_policy
+     * @param string|null $format
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function script(string $name, array $vars, string $script, ?string $gap_policy = null, ?string $format = null): QueryBuilder
+    {
+        $bucket_script = [ 'bucket_script' => [ 'buckets_path' => $vars, 'script' => $script ]];
+
+        if ($gap_policy) {
+            $bucket_script['bucket_script']['gap_policy'] = $gap_policy;
+        }
+
+        if ($format) {
+            $bucket_script['bucket_script']['format'] = $format;
+        }
+
+        return $this->aggregation($name, $bucket_script);
     }
 
     /**
