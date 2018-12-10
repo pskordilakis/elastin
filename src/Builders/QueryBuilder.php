@@ -71,7 +71,7 @@ class QueryBuilder implements Builder
     private $ranges = [];
 
     /**
-     * @var array
+     * @var \Elastin\Container
      */
     private $aggregations = null;
 
@@ -239,7 +239,19 @@ class QueryBuilder implements Builder
 
     /**
      * @param string $field
-     * @param mixed $value
+     * @param array $values
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function whereIn(string $field, array $values): QueryBuilder
+    {
+        return $this->filter('terms', [ $field => $values ]);
+    }
+
+    /**
+     * @param string $field
+     * @param mixed $gte
+     * @param mixed $lte
      *
      * @return \Elastin\Builders\QueryBuilder
      */
@@ -356,7 +368,7 @@ class QueryBuilder implements Builder
      */
     public function timeSeries(string $name, string $field, ?array $options): QueryBuilder
     {
-        return $this->aggregation($name, [ 'date_histogram' => array_merge([ 'field' => $field ], $options)]);
+        return $this->aggregation($name, [ 'date_histogram' => array_merge([ 'field' => $field ], $options ?? [])]);
     }
 
     /**
