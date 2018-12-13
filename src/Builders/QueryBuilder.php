@@ -44,6 +44,10 @@ class QueryBuilder implements Builder
      */
     private $size = null;
 
+    /**
+     * @var array
+     */
+    private $wildcardClauses = [];
 
     /**
      * @var array
@@ -185,6 +189,19 @@ class QueryBuilder implements Builder
     public function size(int $size): QueryBuilder
     {
         $this->size = $size;
+
+        return $this;
+    }
+
+    /**
+     * @param string $field
+     * @param string $term
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function wildcard(string $field, string $term): QueryBuilder
+    {
+        $this->wildcardClauses[$field] = $term;
 
         return $this;
     }
@@ -492,6 +509,15 @@ class QueryBuilder implements Builder
         return $this;
     }
 
+    private function _buildWildcardClauses(): QueryBuilder
+    {
+        if (count($this->wildcardClauses) > 0) {
+            $this->query->body['query.wildcard'] = $this->wildcardClauses;
+        }
+
+        return $this;
+    }
+
     /**
      * @return \Elastin\Builders\QueryBuilder
      */
@@ -585,6 +611,7 @@ class QueryBuilder implements Builder
             ->_buildMatch()
             ->_buildBoolQueries()
             ->_buildRangeQueries()
+            ->_buildWildcardClauses()
             ->_buildAggregations()
             ->_buildPagination()
             ->_buildSorting()
