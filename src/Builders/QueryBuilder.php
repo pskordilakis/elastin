@@ -267,6 +267,17 @@ class QueryBuilder implements Builder
 
     /**
      * @param string $field
+     * @param array $values
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function whereNotIn(string $field, array $values): QueryBuilder
+    {
+        return $this->mustNot('terms', [ $field => $values ]);
+    }
+
+    /**
+     * @param string $field
      * @param mixed $gte
      * @param mixed $lte
      *
