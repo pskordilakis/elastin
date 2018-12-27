@@ -382,6 +382,39 @@ class QueryBuilder implements Builder
      *
      * @return \Elastin\Builders\QueryBuilder
      */
+    public function min(string $name, string $field): QueryBuilder
+    {
+        return $this->aggregation($name, [ 'min' => [ 'field' => $field ]]);
+    }
+
+    /**
+     * @param string $name
+     * @param string $field
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function max(string $name, string $field): QueryBuilder
+    {
+        return $this->aggregation($name, [ 'avg' => [ 'field' => $field ]]);
+    }
+
+    /**
+     * @param string $name
+     * @param string $field
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
+    public function average(string $name, string $field): QueryBuilder
+    {
+        return $this->aggregation($name, [ 'max' => [ 'field' => $field ]]);
+    }
+
+    /**
+     * @param string $name
+     * @param string $field
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function groupBy(string $name, string $field): QueryBuilder
     {
         return $this->aggregation($name, [ 'terms' => [ 'field' => $field ] ]);
