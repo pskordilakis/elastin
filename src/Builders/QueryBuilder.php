@@ -395,7 +395,7 @@ class QueryBuilder implements Builder
      */
     public function max(string $name, string $field): QueryBuilder
     {
-        return $this->aggregation($name, [ 'avg' => [ 'field' => $field ]]);
+        return $this->aggregation($name, [ 'max' => [ 'field' => $field ]]);
     }
 
     /**
@@ -406,7 +406,7 @@ class QueryBuilder implements Builder
      */
     public function average(string $name, string $field): QueryBuilder
     {
-        return $this->aggregation($name, [ 'max' => [ 'field' => $field ]]);
+        return $this->aggregation($name, [ 'avg' => [ 'field' => $field ]]);
     }
 
     /**
