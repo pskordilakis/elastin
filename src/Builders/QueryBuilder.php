@@ -415,6 +415,17 @@ class QueryBuilder implements Builder
      *
      * @return \Elastin\Builders\QueryBuilder
      */
+    public function percentiles(string $name, string $field): QueryBuilder
+    {
+        return $this->aggregation($name, [ 'percentiles' => [ 'field' => $field ]]);
+    }
+    
+    /**
+     * @param string $name
+     * @param string $field
+     *
+     * @return \Elastin\Builders\QueryBuilder
+     */
     public function groupBy(string $name, string $field): QueryBuilder
     {
         return $this->aggregation($name, [ 'terms' => [ 'field' => $field ] ]);
